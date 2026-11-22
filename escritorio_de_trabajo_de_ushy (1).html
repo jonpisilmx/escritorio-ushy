@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Escritorio Creativo de Ushy — Ideas &amp; Calendario Editorial</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FAF6F2',
+            creamDark: '#F2ECE4',
+            charcoal: '#3B3F4C',
+            slateText: '#5E6472',
+            mustard: '#F2CE46',
+            coral: '#E86A50',
+            lavender: '#D8C7EE',
+            skyPastel: '#A8D1E7',
+            pinkPastel: '#F4C6D7',
+            sagePastel: '#C5E0B4'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+          },
+          boxShadow: {
+            editorial: '0 6px 20px -4px rgba(59, 63, 76, 0.08), 0 2px 6px -1px rgba(59, 63, 76, 0.04)',
+            cardHover: '0 12px 26px -6px rgba(59, 63, 76, 0.13), 0 4px 10px -2px rgba(59, 63, 76, 0.06)',
+            pill: '0 2px 8px rgba(59, 63, 76, 0.07)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #FAF6F2;
+      color: #3B3F4C;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 15px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    h1, h2, h3, .font-display {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+
+    /* Barra de desplazamiento sutil */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF6F2;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D6CFC7;
+      border-radius: 9999px;
+    }
+
+    /* Textareas con mínimo 5 líneas claramente visibles y cómodas en móvil */
+    textarea.idea-textarea {
+      min-height: 126px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    /* Transiciones suaves */
+    .card-transition {
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    /* Estilo del selector de fecha nativo */
+    input[type="date"] {
+      position: relative;
+      cursor: pointer;
+    }
+
+    /* Animación Toast */
+    @keyframes slideUpFade {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .toast-enter {
+      animation: slideUpFade 0.22s ease forwards;
+    }
+
+    /* Mini calendario emergente personalizado */
+    .mini-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-24 md:pb-12 selection:bg-mustard/40 selection:text-charcoal">
+
+  <!-- Toast / Notificación no intrusiva -->
+  <div id="toastContainer" class="fixed bottom-20 md:bottom-6 right-4 left-4 md:left-auto md:w-96 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- HEADER EDITORIAL -->
+  <header class="sticky top-0 z-30 bg-cream/95 backdrop-blur-md border-b border-[#EAE2D8]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- Identidad Visual tipo Infografía -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-mustard flex items-center justify-center shadow-pill border-2 border-charcoal/10 shrink-0">
+          <!-- Icono creativo SVG -->
+          <svg class="w-6 h-6 text-charcoal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="5" />
+            <circle cx="12" cy="12" r="4" />
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-charcoal leading-tight">
+              Escritorio de Ushy
+            </h1>
+            <span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-lavender/70 text-charcoal">
+              Content Studio
+            </span>
+          </div>
+          <p class="text-xs text-slateText font-medium">Organiza, jerarquiza y programa tus ideas</p>
+        </div>
+      </div>
+
+      <!-- Navegación Desktop (Tabs integradas) -->
+      <nav class="hidden md:flex items-center bg-[#EFE8DF] p-1.5 rounded-2xl gap-1" aria-label="Secciones principales">
+        <button onclick="switchTab('ideas')" id="desk-tab-ideas" class="nav-tab-desk px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 bg-white text-charcoal shadow-pill">
+          <span>💡</span> Ideas de Contenido
+          <span id="badge-ideas-desk" class="px-2 py-0.5 text-xs rounded-full bg-mustard/60 text-charcoal font-extrabold">0</span>
+        </button>
+        <button onclick="switchTab('calendar')" id="desk-tab-calendar" class="nav-tab-desk px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 text-slateText hover:text-charcoal">
+          <span>🗓️</span> Calendario de Posts
+          <span id="badge-cal-desk" class="px-2 py-0.5 text-xs rounded-full bg-coral/20 text-charcoal font-extrabold">0</span>
+        </button>
+        <button onclick="switchTab('lab')" id="desk-tab-lab" class="nav-tab-desk px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 text-slateText hover:text-charcoal">
+          <span>🧪</span> Laboratorio de Ideas
+          <span id="badge-lab-desk" class="px-2 py-0.5 text-xs rounded-full bg-sagePastel/70 text-charcoal font-extrabold">0</span>
+        </button>
+      </nav>
+
+      <!-- Botones de utilidad / Respaldo y Clientes -->
+      <div class="flex items-center gap-2">
+        <button onclick="openClientModal()" class="px-3 py-2 rounded-xl bg-white hover:bg-[#F7F2EC] border border-[#E2D9CE] text-xs sm:text-sm font-bold text-charcoal shadow-pill flex items-center gap-1.5 transition" title="Gestionar clientes y colores">
+          <span>🎨</span>
+          <span class="hidden sm:inline">Clientes</span>
+        </button>
+        <button onclick="openDataModal()" class="p-2.5 rounded-xl bg-white hover:bg-[#F7F2EC] border border-[#E2D9CE] text-charcoal shadow-pill transition" title="Respaldo y opciones">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 pt-5">
+
+    <!-- =================================================================== -->
+    <!-- SECCIÓN 1: IDEAS DE CONTENIDO (BANDEJA DE TARJETAS POR CLIENTE)      -->
+    <!-- =================================================================== -->
+    <section id="view-ideas" class="space-y-5">
+      <!-- Banner cabecera editorial -->
+      <div class="bg-white rounded-3xl p-4 sm:p-6 shadow-editorial border border-[#ECE4DA] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mustard/35 text-charcoal text-xs font-extrabold uppercase tracking-wider mb-2">
+            <span>✨</span> Bandeja Creativa &amp; Jerarquización
+          </div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-charcoal">Ideas de Contenido por Cliente</h2>
+          <p class="text-sm text-slateText mt-0.5">Desarrolla el hook, guarda inspiración, elige pilar y súbelo al calendario cuando esté listo.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button onclick="createNewIdeaCard()" class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-charcoal hover:bg-[#2B2E38] active:scale-[0.99] text-white font-bold text-sm shadow-editorial flex items-center justify-center gap-2 transition">
+            <span class="w-5 h-5 rounded-full bg-mustard text-charcoal flex items-center justify-center font-extrabold text-base leading-none">+</span>
+            Nueva Idea de Contenido
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de filtros rápidos por Cliente y Estado -->
+      <div class="bg-white/80 rounded-2xl p-3 border border-[#EAE2D8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0" id="ideasClientFilterBar">
+          <!-- Pills generadas dinámicamente -->
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <select id="ideasPillarFilter" onchange="renderIdeasBoard()" class="px-3 py-2 rounded-xl bg-cream border border-[#E2D9CE] text-xs font-bold text-charcoal focus:outline-none focus:ring-2 focus:ring-mustard">
+            <option value="ALL">Todos los pilares</option>
+            <option value="Educativo">📚 Educativo</option>
+            <option value="Inspirador">✨ Inspirador</option>
+            <option value="Emocional">💛 Emocional</option>
+            <option value="Entretenimiento">🎬 Entretenimiento</option>
+            <option value="Meme/Tendencia">🔥 Meme / Tendencia</option>
+            <option value="Venta/Oferta">🛍️ Venta / Oferta</option>
+          </select>
+          <select id="ideasStatusFilter" onchange="renderIdeasBoard()" class="px-3 py-2 rounded-xl bg-cream border border-[#E2D9CE] text-xs font-bold text-charcoal focus:outline-none focus:ring-2 focus:ring-mustard">
+            <option value="ALL">Todos los estados</option>
+            <option value="in_progress">⏳ En proceso</option>
+            <option value="published">✅ Publicado</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grid de Tarjetas de Ideas -->
+      <div id="ideasGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <!-- Tarjetas renderizadas por JS -->
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECCIÓN 2: CALENDARIO DE PROGRAMACIÓN DE POSTS                      -->
+    <!-- =================================================================== -->
+    <section id="view-calendar" class="hidden space-y-5">
+      <!-- Controles superiores del calendario -->
+      <div class="bg-white rounded-3xl p-4 sm:p-6 shadow-editorial border border-[#ECE4DA] space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-coral/20 text-charcoal text-xs font-extrabold uppercase tracking-wider mb-1.5">
+              <span>📅</span> Parrilla Mensual Multicliente
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-charcoal">Calendario de Programación de Posts</h2>
+            <p class="text-xs sm:text-sm text-slateText">Toca cualquier publicación programada para ver su detalle, moverla de fecha o regresarla a tarjetas.</p>
+          </div>
+
+          <!-- Navegación de Mes (< Mes Año >) -->
+          <div class="flex items-center justify-between sm:justify-center gap-2 bg-cream p-1.5 rounded-2xl border border-[#E5DDD2]">
+            <button onclick="changeCalendarMonth(-1)" class="w-10 h-10 rounded-xl bg-white hover:bg-mustard/30 active:scale-95 border border-[#E5DDD2] flex items-center justify-center font-extrabold text-charcoal shadow-sm transition" aria-label="Mes anterior">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="px-4 text-center min-w-[165px]">
+              <span id="calendarMonthLabel" class="block text-base sm:text-lg font-extrabold text-charcoal capitalize">Noviembre 2026</span>
+              <button onclick="resetCalendarToDefault()" class="text-[11px] font-bold text-slateText hover:text-charcoal underline">Ir a Nov 2026</button>
+            </div>
+            <button onclick="changeCalendarMonth(1)" class="w-10 h-10 rounded-xl bg-white hover:bg-mustard/30 active:scale-95 border border-[#E5DDD2] flex items-center justify-center font-extrabold text-charcoal shadow-sm transition" aria-label="Mes siguiente">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtro de clientes en el calendario + Leyenda de colores -->
+        <div class="pt-2 border-t border-[#F0E9E0] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div id="calendarClientFilterBar" class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+            <!-- Pills de clientes -->
+          </div>
+          <div class="flex items-center gap-3 text-xs font-semibold text-slateText shrink-0">
+            <span class="inline-flex items-center gap-1">⏳ En proceso</span>
+            <span class="inline-flex items-center gap-1">✅ Publicado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuadrícula del Calendario Mensual -->
+      <div class="bg-white rounded-3xl shadow-editorial border border-[#ECE4DA] overflow-hidden">
+        <!-- Días de la semana -->
+        <div class="grid grid-cols-7 bg-[#F5EFE8] border-b border-[#E6DDD2] text-center py-2.5">
+          <div class="text-xs font-extrabold text-charcoal uppercase tracking-wider">Lun</div>
+          <div class="text-xs font-extrabold text-charcoal uppercase tracking-wider">Mar</div>
+          <div class="text-xs font-extrabold text-charcoal uppercase tracking-wider">Mié</div>
+          <div class="text-xs font-extrabold text-charcoal uppercase tracking-wider">Jue</div>
+          <div class="text-xs font-extrabold text-charcoal uppercase tracking-wider">Vie</div>
+          <div class="text-xs font-extrabold text-coral uppercase tracking-wider">Sáb</div>
+          <div class="text-xs font-extrabold text-coral uppercase tracking-wider">Dom</div>
+        </div>
+
+        <!-- Celdas de días -->
+        <div id="calendarDaysGrid" class="grid grid-cols-7 divide-x divide-y divide-[#EFE8DF]">
+          <!-- Renderizado dinámico -->
+        </div>
+      </div>
+
+      <!-- Lista resumen móvil debajo del calendario para lectura rápida en pantallas pequeñas -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-editorial border border-[#ECE4DA]">
+        <h3 class="text-sm font-extrabold uppercase tracking-wider text-slateText mb-3 flex items-center gap-2">
+          <span>📋</span> Agenda cronológica del mes visible
+        </h3>
+        <div id="calendarMonthlyList" class="space-y-2.5">
+          <!-- Lista ordenada de posts del mes -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECCIÓN 3: LABORATORIO DE IDEAS (PROYECTOS INDEPENDIENTES)          -->
+    <!-- =================================================================== -->
+    <section id="view-lab" class="hidden space-y-5">
+      <!-- Cabecera estilo infografía Canva ("Ideas for your next post / Lab") -->
+      <div class="relative overflow-hidden bg-white rounded-3xl p-5 sm:p-6 shadow-editorial border border-[#ECE4DA]">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sagePastel/60 text-charcoal text-xs font-extrabold uppercase tracking-wider mb-2">
+              <span>🧪</span> Espacio Libre &amp; Proyectos Propios
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-charcoal">Laboratorio de Ideas de Ushy</h2>
+            <p class="text-sm text-slateText mt-0.5">Anota conceptos experimentales, series personales, formatos nuevos o proyectos independientes sin presión de clientes.</p>
+          </div>
+          <button onclick="createNewLabCard()" class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-mustard hover:bg-[#E7C135] active:scale-[0.99] text-charcoal font-extrabold text-sm shadow-editorial flex items-center justify-center gap-2 transition">
+            <span class="w-5 h-5 rounded-full bg-charcoal text-white flex items-center justify-center font-extrabold text-base leading-none">+</span>
+            Nueva Idea en Laboratorio
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid de Tarjetas del Laboratorio -->
+      <div id="labGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Tarjetas de laboratorio -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- NAVEGACIÓN INFERIOR FIJA PARA MÓVIL (Mobile-First Thumb Zone) -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E6DDD2] px-2 py-1.5 shadow-[0_-4px_20px_rgba(59,63,76,0.08)]" aria-label="Navegación móvil">
+    <div class="grid grid-cols-3 gap-1 max-w-md mx-auto">
+      <button onclick="switchTab('ideas')" id="mob-tab-ideas" class="nav-tab-mob flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-mustard/35 text-charcoal font-extrabold transition">
+        <div class="flex items-center gap-1">
+          <span class="text-base">💡</span>
+          <span id="badge-ideas-mob" class="text-[10px] px-1.5 py-0.2 rounded-full bg-charcoal text-white font-bold">0</span>
+        </div>
+        <span class="text-[11px] mt-0.5">Ideas</span>
+      </button>
+      <button onclick="switchTab('calendar')" id="mob-tab-calendar" class="nav-tab-mob flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slateText font-bold transition">
+        <div class="flex items-center gap-1">
+          <span class="text-base">🗓️</span>
+          <span id="badge-cal-mob" class="text-[10px] px-1.5 py-0.2 rounded-full bg-coral text-white font-bold">0</span>
+        </div>
+        <span class="text-[11px] mt-0.5">Calendario</span>
+      </button>
+      <button onclick="switchTab('lab')" id="mob-tab-lab" class="nav-tab-mob flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slateText font-bold transition">
+        <div class="flex items-center gap-1">
+          <span class="text-base">🧪</span>
+          <span id="badge-lab-mob" class="text-[10px] px-1.5 py-0.2 rounded-full bg-sagePastel text-charcoal font-bold">0</span>
+        </div>
+        <span class="text-[11px] mt-0.5">Laboratorio</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: DETALLE DE POST EN CALENDARIO (EDITAR / MOVER / REGRESAR)     -->
+  <!-- ===================================================================== -->
+  <div id="calendarDetailModal" class="hidden fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full sm:max-w-xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-[#E5DDD2] max-h-[92vh] overflow-y-auto">
+      <!-- Barra superior de color del cliente -->
+      <div id="modalColorHeader" class="h-3 w-full rounded-t-3xl bg-mustard"></div>
+
+      <div class="p-5 sm:p-6 space-y-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="modalClientBadge" class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-mustard/30 text-charcoal">Cliente</span>
+            <span id="modalPillarBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-cream text-slateText border border-[#E5DDD2]">Pilar</span>
+          </div>
+          <button onclick="closeDetailModal()" class="w-9 h-9 rounded-full bg-cream hover:bg-[#EAE2D8] flex items-center justify-center text-charcoal font-bold transition" aria-label="Cerrar detalle">✕</button>
+        </div>
+
+        <!-- Estado interactivo dentro del modal -->
+        <div class="flex items-center justify-between bg-cream rounded-2xl p-3 border border-[#EAE2D8]">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-slateText">Estado de publicación:</span>
+          <button id="modalStatusToggleBtn" onclick="toggleModalIdeaStatus()" class="px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm transition">
+            <!-- Dinámico -->
+          </button>
+        </div>
+
+        <!-- Hook editable -->
+        <div>
+          <label class="block text-xs font-extrabold uppercase tracking-wider text-slateText mb-1">🎣 Hook</label>
+          <input id="modalHookInput" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-cream/70 border border-[#E2D9CE] font-bold text-charcoal focus:outline-none focus:ring-2 focus:ring-mustard" placeholder="Escribe el gancho..." />
+        </div>
+
+        <!-- Idea completa editable (mínimo 5 líneas) -->
+        <div>
+          <label class="block text-xs font-extrabold uppercase tracking-wider text-slateText mb-1">📝 Idea / Guion de contenido</label>
+          <textarea id="modalIdeaTextarea" rows="5" class="idea-textarea w-full px-3.5 py-2.5 rounded-xl bg-cream/70 border border-[#E2D9CE] text-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-mustard" placeholder="Desarrollo completo de la idea..."></textarea>
+        </div>
+
+        <!-- Link de inspiración -->
+        <div>
+          <label class="block text-xs font-extrabold uppercase tracking-wider text-slateText mb-1">🔗 Link de inspiración</label>
+          <div class="flex items-center gap-2">
+            <input id="modalLinkInput" type="url" class="flex-1 px-3.5 py-2.5 rounded-xl bg-cream/70 border border-[#E2D9CE] text-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-mustard" placeholder="https://www.instagram.com/reel/..." />
+            <a id="modalLinkAnchor" href="#" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2.5 rounded-xl bg-skyPastel/50 hover:bg-skyPastel text-charcoal font-bold text-xs shrink-0 transition">
+              Abrir ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Reprogramar fecha fácilmente -->
+        <div class="bg-[#F9F5F0] rounded-2xl p-3.5 border border-[#E5DDD2] space-y-2.5">
+          <label class="block text-xs font-extrabold uppercase tracking-wider text-charcoal">📅 Fecha programada (Mover de día o mes)</label>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input id="modalDateInput" type="date" class="flex-1 px-3.5 py-2.5 rounded-xl bg-white border border-[#DCD2C6] text-sm font-bold text-charcoal focus:outline-none focus:ring-2 focus:ring-mustard" />
+            <button onclick="saveAndMoveCalendarIdea()" class="px-4 py-2.5 rounded-xl bg-charcoal hover:bg-[#2B2E38] text-white font-bold text-xs sm:text-sm transition">
+              Guardar cambios y fecha
+            </button>
+          </div>
+        </div>
+
+        <!-- Acciones inferiores: Regresar a zona de tarjetas o Eliminar -->
+        <div class="pt-2 border-t border-[#EFE8DF] flex flex-col sm:flex-row items-center justify-between gap-2.5">
+          <button onclick="returnIdeaToBoard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-mustard/40 hover:bg-mustard/70 text-charcoal font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition">
+            <span>↩️</span> Regresar idea a zona de tarjetas
+          </button>
+          <button onclick="deleteCurrentModalIdea()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-coral/15 hover:bg-coral/30 text-[#B83B24] font-bold text-xs sm:text-sm transition">
+            🗑️ Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: GESTIÓN DE CLIENTES (AGREGAR NUEVO CLIENTE Y SU COLOR)       -->
+  <!-- ===================================================================== -->
+  <div id="clientModal" class="hidden fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl border border-[#E5DDD2] p-5 sm:p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-extrabold text-charcoal">Clientes &amp; Etiquetas de Color</h3>
+          <p class="text-xs text-slateText">Cada cliente tiene un color único en tarjetas y calendario.</p>
+        </div>
+        <button onclick="closeClientModal()" class="w-9 h-9 rounded-full bg-cream hover:bg-[#EAE2D8] flex items-center justify-center text-charcoal font-bold">✕</button>
+      </div>
+
+      <!-- Formulario agregar cliente -->
+      <div class="bg-cream rounded-2xl p-4 border border-[#E5DDD2] space-y-3">
+        <label class="block text-xs font-extrabold uppercase tracking-wider text-charcoal">Agregar nuevo cliente</label>
+        <input id="newClientNameInput" type="text" placeholder="Ej. Sofía, Café Aurora, Marca X..." class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#DCD2C6] text-sm font-semibold text-charcoal focus:outline-none focus:ring-2 focus:ring-mustard" />
+
+        <div>
+          <span class="block text-xs font-bold text-slateText mb-1.5">Elige un color identificador:</span>
+          <div id="colorPalettePicker" class="flex flex-wrap gap-2">
+            <!-- Swatches generados por JS -->
+          </div>
+        </div>
+
+        <button onclick="addNewClient()" class="w-full py-2.5 rounded-xl bg-charcoal hover:bg-[#2B2E38] text-white font-bold text-sm transition">
+          + Agregar Cliente
+        </button>
+      </div>
+
+      <!-- Lista de clientes actuales -->
+      <div>
+        <span class="block text-xs font-extrabold uppercase tracking-wider text-slateText mb-2">Clientes activos</span>
+        <div id="clientsListContainer" class="max-h-48 overflow-y-auto space-y-2 pr-1">
+          <!-- Lista dinámica -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 3: MINI CALENDARIO EMERGENTE PARA TARJETAS                      -->
+  <!-- ===================================================================== -->
+  <div id="miniCalendarModal" class="hidden fixed inset-0 z-50 bg-charcoal/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xs rounded-3xl shadow-2xl border border-[#E5DDD2] p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <button onclick="changeMiniCalMonth(-1)" class="w-8 h-8 rounded-xl bg-cream hover:bg-mustard/40 flex items-center justify-center font-bold text-charcoal">‹</button>
+        <span id="miniCalMonthLabel" class="text-sm font-extrabold text-charcoal capitalize">Noviembre 2026</span>
+        <button onclick="changeMiniCalMonth(1)" class="w-8 h-8 rounded-xl bg-cream hover:bg-mustard/40 flex items-center justify-center font-bold text-charcoal">›</button>
+      </div>
+
+      <div class="mini-cal-grid text-center text-[11px] font-extrabold text-slateText">
+        <div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div class="text-coral">S</div><div class="text-coral">D</div>
+      </div>
+
+      <div id="miniCalDaysGrid" class="mini-cal-grid">
+        <!-- Días del mini calendario -->
+      </div>
+
+      <div class="pt-2 border-t border-[#EFE8DF] flex items-center justify-between gap-2">
+        <button onclick="clearMiniCalDate()" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slateText hover:bg-cream">Limpiar fecha</button>
+        <button onclick="closeMiniCalModal()" class="px-4 py-1.5 rounded-xl bg-charcoal text-white text-xs font-bold">Listo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 4: OPCIONES / RESPALDO JSON / RESTAURAR EJEMPLOS                -->
+  <!-- ===================================================================== -->
+  <div id="dataModal" class="hidden fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl border border-[#E5DDD2] p-5 sm:p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-extrabold text-charcoal">Respaldo y Configuración</h3>
+        <button onclick="closeDataModal()" class="w-9 h-9 rounded-full bg-cream hover:bg-[#EAE2D8] flex items-center justify-center text-charcoal font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slateText leading-relaxed">
+        Tus ideas, clientes y calendario se guardan automáticamente en este dispositivo. Aquí puedes descargar un respaldo o reiniciar los ejemplos iniciales.
+      </p>
+      <div class="space-y-2.5">
+        <button onclick="exportBackupJSON()" class="w-full py-3 px-4 rounded-2xl bg-skyPastel/45 hover:bg-skyPastel/70 text-charcoal font-bold text-sm flex items-center justify-center gap-2 transition">
+          <span>💾</span> Descargar respaldo (.json)
+        </button>
+        <label class="w-full py-3 px-4 rounded-2xl bg-lavender/45 hover:bg-lavender/70 text-charcoal font-bold text-sm flex items-center justify-center gap-2 cursor-pointer transition">
+          <span>📂</span> Importar respaldo (.json)
+          <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden" />
+        </label>
+        <button onclick="resetDemoData()" class="w-full py-3 px-4 rounded-2xl bg-cream hover:bg-coral/20 text-charcoal font-bold text-sm flex items-center justify-center gap-2 border border-[#E2D9CE] transition">
+          <span>🔄</span> Restaurar ideas de ejemplo iniciales
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- LÓGICA DE APLICACIÓN (JAVASCRIPT)                                     -->
+  <!-- ===================================================================== -->
+  <script>
+    // Clave de almacenamiento local
+    const STORAGE_KEY = 'ushy_creative_workspace_v1';
+
+    // Paleta editorial de colores para clientes (basada en la infografía de referencia)
+    const COLOR_PALETTE = [
+      { id: 'mustard', name: 'Mostaza Sol', accent: '#F2CE46', bg: '#FDF7DF', badgeText: '#3B3F4C' },
+      { id: 'coral', name: 'Coral Terracota', accent: '#E86A50', bg: '#FDECE8', badgeText: '#FFFFFF' },
+      { id: 'lavender', name: 'Lavanda Suave', accent: '#B392AC', bg: '#F4EFFA', badgeText: '#FFFFFF' },
+      { id: 'sky', name: 'Azul Cielo', accent: '#6BA3BE', bg: '#EDF6FA', badgeText: '#FFFFFF' },
+      { id: 'pink', name: 'Rosa Editorial', accent: '#E08DAC', bg: '#FDF0F5', badgeText: '#FFFFFF' },
+      { id: 'sage', name: 'Menta Salvia', accent: '#8CB87A', bg: '#F1F8EE', badgeText: '#FFFFFF' },
+      { id: 'peach', name: 'Durazno Cálido', accent: '#F09D65', bg: '#FEF3EB', badgeText: '#3B3F4C' },
+      { id: 'periwinkle', name: 'Lila Pervinca', accent: '#9B9CE2', bg: '#F1F1FC', badgeText: '#FFFFFF' }
+    ];
+
+    // Pilares de contenido solicitados
+    const CONTENT_PILLARS = [
+      { value: 'Educativo', label: '📚 Educativo' },
+      { value: 'Inspirador', label: '✨ Inspirador' },
+      { value: 'Emocional', label: '💛 Emocional' },
+      { value: 'Entretenimiento', label: '🎬 Entretenimiento' },
+      { value: 'Meme/Tendencia', label: '🔥 Meme / Tendencia' },
+      { value: 'Venta/Oferta', label: '🛍️ Venta / Oferta' }
+    ];
+
+    const MONTH_NAMES_ES = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    // Clientes iniciales preconfigurados
+    const DEFAULT_CLIENTS = [
+      { id: 'ushy', name: 'Ushy', accent: '#F2CE46', bg: '#FDF7DF', badgeText: '#3B3F4C' },
+      { id: 'fer', name: 'Fer', accent: '#E86A50', bg: '#FDECE8', badgeText: '#FFFFFF' },
+      { id: 'gina', name: 'Gina', accent: '#B392AC', bg: '#F4EFFA', badgeText: '#FFFFFF' },
+      { id: 'kari', name: 'Kari', accent: '#6BA3BE', bg: '#EDF6FA', badgeText: '#FFFFFF' },
+      { id: 'encuentos', name: 'EnCuentos', accent: '#E08DAC', bg: '#FDF0F5', badgeText: '#FFFFFF' }
+    ];
+
+    // Datos iniciales de ejemplo (Noviembre / Diciembre 2026)
+    function getInitialSeedState() {
+      return {
+        clients: [...DEFAULT_CLIENTS],
+        ideas: [
+          {
+            id: 'idea-101',
+            clientId: 'ushy',
+            hook: '3 errores al organizar tu calendario de contenido que te roban 4 horas a la semana',
+            idea: 'Carrusel educativo de 6 diapositivas con estilo infografía:\n1. Portada con título fuerte y contraste amarillo/carbón.\n2. Error 1: Crear sin definir el pilar antes.\n3. Error 2: Guardar links sueltos en WhatsApp sin contexto.\n4. Error 3: No separar ideas personales de clientes.\n5. CTA: Guarda este post para tu planeación semanal.',
+            link: 'https://www.instagram.com/',
+            pillar: 'Educativo',
+            status: 'in_progress',
+            scheduledDate: '2026-11-28',
+            inCalendar: false
+          },
+          {
+            id: 'idea-102',
+            clientId: 'fer',
+            hook: 'Lo que nadie te cuenta detrás de cámara antes de lanzar un nuevo servicio',
+            idea: 'Reel dinámico de 20 segundos con cortes rápidos de la preparación, notas en libreta y café de la mañana.\nTexto en pantalla contando la historia real del proceso.\nCierre emocional conectando con emprendedores que están empezando.',
+            link: 'https://www.tiktok.com/',
+            pillar: 'Emocional',
+            status: 'in_progress',
+            scheduledDate: '2026-11-24',
+            inCalendar: true
+          },
+          {
+            id: 'idea-103',
+            clientId: 'gina',
+            hook: 'POV: Cuando el cliente dice "solo es un cambiecito rápido" el viernes a las 7 pm',
+            idea: 'Audio en tendencia con transición de cara seria a sonrisa profesional.\nCaption humorístico pero empático sobre la importancia de los procesos creativos.\nInvitar a comentar con un emoji si les ha pasado.',
+            link: 'https://www.instagram.com/reels/',
+            pillar: 'Meme/Tendencia',
+            status: 'published',
+            scheduledDate: '2026-11-21',
+            inCalendar: true
+          },
+          {
+            id: 'idea-104',
+            clientId: 'kari',
+            hook: 'Checklist definitivo antes de cerrar tus metas de fin de año',
+            idea: 'Infografía visual en tonos pastel con 5 puntos accionables para revisar finanzas y hábitos.\nIdeal para que la audiencia tome captura de pantalla y lo comparta en historias.',
+            link: '',
+            pillar: 'Inspirador',
+            status: 'in_progress',
+            scheduledDate: '2026-12-03',
+            inCalendar: true
+          },
+          {
+            id: 'idea-105',
+            clientId: 'encuentos',
+            hook: 'Un cuento corto para leer antes de dormir cuando sientes que el día fue demasiado rápido',
+            idea: 'Carrusel narrativo ilustrado con tipografía cálida.\nHistoria breve de 4 láminas sobre hacer una pausa y observar los pequeños detalles.\nLlamado a compartirlo con alguien que necesite un respiro hoy.',
+            link: 'https://www.pinterest.com/',
+            pillar: 'Emocional',
+            status: 'in_progress',
+            scheduledDate: '',
+            inCalendar: false
+          }
+        ],
+        labIdeas: [
+          {
+            id: 'lab-201',
+            title: 'Serie: "Cafecito y Estrategia" (Podcast / Reels largos)',
+            tag: 'Proyecto Independiente',
+            notes: 'Explorar formato de episodios de 3 minutos hablando sin guion rígido sobre creatividad, burnout y cómo gestionar múltiples cuentas sin perder tu propia voz.\nGrabar piloto con luz natural y micrófono de solapa.',
+            link: 'https://www.youtube.com/',
+            colorIndex: 0
+          },
+          {
+            id: 'lab-202',
+            title: 'Plantillas descargables de Notion + Canva para creadores',
+            tag: 'Producto Digital',
+            notes: 'Crear un kit minimalista con tablero de pilares, banco de hooks y rastreador de métricas mensuales.\nProbar primero con una versión gratuita tipo lead magnet para medir interés.',
+            link: 'https://www.canva.com/',
+            colorIndex: 2
+          }
+        ]
+      };
+    }
+
+    // Estado global
+    let appState = null;
+    appState = loadState();
+    let activeTab = 'ideas';
+    let selectedClientFilterIdeas = 'ALL';
+    let selectedClientFilterCal = 'ALL';
+
+    // Estado del calendario principal (Inicia en Noviembre 2026)
+    let calYear = 2026;
+    let calMonth = 10; // 0 = Enero, 10 = Noviembre
+
+    // Estado del modal de detalle del calendario
+    let activeModalIdeaId = null;
+    let modalTempStatus = 'in_progress';
+
+    // Estado del mini calendario emergente
+    let miniCalTargetIdeaId = null;
+    let miniCalYear = 2026;
+    let miniCalMonth = 10;
+
+    // Color seleccionado en modal de nuevo cliente
+    let selectedNewClientColor = COLOR_PALETTE[5];
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.clients) && Array.isArray(parsed.ideas)) {
+            if (!Array.isArray(parsed.labIdeas)) parsed.labIdeas = [];
+            return parsed;
+          }
+        }
+      } catch (e) {
+        console.error('Error leyendo localStorage:', e);
+      }
+      const initial = getInitialSeedState();
+      saveState(initial);
+      return initial;
+    }
+
+    function saveState(stateToSave = appState) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+      } catch (e) {
+        console.error('Error guardando en localStorage:', e);
+      }
+      if (appState) {
+        updateTabCounters();
+      }
+    }
+
+    function setIdeasClientFilter(clientId) {
+      selectedClientFilterIdeas = clientId;
+      renderIdeasBoard();
+    }
+
+    function setCalClientFilter(clientId) {
+      selectedClientFilterCal = clientId;
+      renderCalendarView();
+    }
+
+    // =========================================================================
+    // SECCIÓN 1: BANDEJA DE TARJETAS DE IDEAS DE CONTENIDO
+    // =========================================================================
+    function createNewIdeaCard() {
+      const defaultClientId = selectedClientFilterIdeas !== 'ALL'
+        ? selectedClientFilterIdeas
+        : (appState.clients[0]?.id || 'ushy');
+
+      const newIdea = {
+        id: 'idea-' + Date.now(),
+        clientId: defaultClientId,
+        hook: '',
+        idea: '',
+        link: '',
+        pillar: 'Educativo',
+        status: 'in_progress',
+        scheduledDate: '',
+        inCalendar: false
+      };
+
+      appState.ideas.unshift(newIdea);
+      saveState();
+      renderIdeasBoard();
+      showToast('Nueva tarjeta creada. ¡Escribe tu idea!', '💡');
+    }
+
+    function updateIdeaField(ideaId, field, value) {
+      const idx = appState.ideas.findIndex(i => i.id === ideaId);
+      if (idx === -1) return;
+
+      // Si el usuario selecciona la opción "+ Agregar nuevo cliente..." en el dropdown
+      if (field === 'clientId' && value === '__ADD_NEW__') {
+        openClientModal(ideaId);
+        renderIdeasBoard();
+        return;
+      }
+
+      appState.ideas[idx][field] = value;
+      saveState();
+
+      // Si cambió cliente, estado o link, re-renderizamos para actualizar el color de tarjeta o enlace visual
+      if (field === 'clientId' || field === 'status' || field === 'link' || field === 'scheduledDate') {
+        renderIdeasBoard();
+      }
+    }
+
+    function toggleIdeaStatus(ideaId) {
+      const idea = appState.ideas.find(i => i.id === ideaId);
+      if (!idea) return;
+      idea.status = idea.status === 'published' ? 'in_progress' : 'published';
+      saveState();
+      renderIdeasBoard();
+      showToast(
+        idea.status === 'published' ? 'Marcada como Publicada ✅' : 'Marcada En proceso ⏳',
+        idea.status === 'published' ? '✅' : '⏳'
+      );
+    }
+
+    function deleteBoardIdea(ideaId) {
+      appState.ideas = appState.ideas.filter(i => i.id !== ideaId);
+      saveState();
+      renderIdeasBoard();
+      showToast('Tarjeta eliminada', '🗑️');
+    }
+
+    function pushIdeaToCalendar(ideaId) {
+      const idea = appState.ideas.find(i => i.id === ideaId);
+      if (!idea) return;
+
+      if (!idea.scheduledDate) {
+        showToast('Elige primero una fecha en el mini calendario 📅', '⚠️');
+        openMiniCalModal(ideaId);
+        return;
+      }
+
+      idea.inCalendar = true;
+      saveState();
+
+      // Ajustar vista del calendario al mes de la fecha elegida para que pueda verla si va hacia allá
+      const parts = idea.scheduledDate.split('-');
+      if (parts.length === 3) {
+        calYear = parseInt(parts[0], 10);
+        calMonth = parseInt(parts[1], 10) - 1;
+      }
+
+      renderIdeasBoard();
+      const client = getClientById(idea.clientId);
+      showToast(`¡Idea de ${client.name} subida al calendario (${formatDateShort(idea.scheduledDate)})!`, '🗓️');
+    }
+
+    function renderIdeasBoard() {
+      renderClientFilterBars();
+      const grid = document.getElementById('ideasGrid');
+      const pillarFilter = document.getElementById('ideasPillarFilter').value;
+      const statusFilter = document.getElementById('ideasStatusFilter').value;
+
+      let filtered = appState.ideas.filter(i => !i.inCalendar);
+      if (selectedClientFilterIdeas !== 'ALL') {
+        filtered = filtered.filter(i => i.clientId === selectedClientFilterIdeas);
+      }
+      if (pillarFilter !== 'ALL') {
+        filtered = filtered.filter(i => i.pillar === pillarFilter);
+      }
+      if (statusFilter !== 'ALL') {
+        filtered = filtered.filter(i => i.status === statusFilter);
+      }
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-[#E2D9CE] space-y-3">
+            <div class="w-14 h-14 rounded-2xl bg-mustard/30 mx-auto flex items-center justify-center text-2xl">✨</div>
+            <h3 class="text-lg font-extrabold text-charcoal">No hay tarjetas pendientes aquí</h3>
+            <p class="text-sm text-slateText max-w-md mx-auto">Crea una nueva idea de contenido o cambia los filtros superiores para visualizar otras tarjetas.</p>
+            <button onclick="createNewIdeaCard()" class="px-5 py-2.5 rounded-2xl bg-charcoal text-white text-sm font-bold shadow-pill hover:bg-[#2B2E38] transition">
+              + Crear nueva idea
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const client = getClientById(item.clientId);
+        const isPublished = item.status === 'published';
+        const hasValidLink = item.link && (item.link.startsWith('http://') || item.link.startsWith('https://'));
+
+        // Opciones del selector desplegable de clientes + opción de agregar nuevo
+        const clientOptionsHtml = appState.clients.map(c =>
+          `<option value="${c.id}" ${c.id === item.clientId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`
+        ).join('') + `<option value="__ADD_NEW__">+ Agregar nuevo cliente...</option>`;
+
+        // Opciones de pilar
+        const pillarOptionsHtml = CONTENT_PILLARS.map(p =>
+          `<option value="${p.value}" ${p.value === item.pillar ? 'selected' : ''}>${p.label}</option>`
+        ).join('');
+
+        return `
+          <article class="card-transition rounded-3xl shadow-editorial hover:shadow-cardHover border border-[#E6DDD2] overflow-hidden flex flex-col"
+            style="background-color: ${client.bg}; border-left: 8px solid ${client.accent};">
+
+            <!-- Cabecera de tarjeta: Selector de Destinatario + Estado Visual -->
+            <div class="px-4 sm:px-5 pt-4 pb-3 flex flex-wrap items-center justify-between gap-2 border-b border-black/5 bg-white/55">
+              <div class="flex items-center gap-2 flex-1 min-w-[170px]">
+                <span class="w-3.5 h-3.5 rounded-full shrink-0 border border-black/15" style="background-color: ${client.accent};"></span>
+                <label class="sr-only">Destinatario</label>
+                <select onchange="updateIdeaField('${item.id}', 'clientId', this.value)"
+                  style="background-color: ${client.accent}; color: ${client.badgeText};"
+                  class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold cursor-pointer focus:outline-none focus:ring-2 focus:ring-charcoal/30 shadow-xs">
+                  ${clientOptionsHtml}
+                </select>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <!-- Toggle Indicador Visual: Reloj de arena vs Palomita verde check -->
+                <button type="button" onclick="toggleIdeaStatus('${item.id}')"
+                  class="px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 border transition shadow-2xs ${
+                    isPublished
+                      ? 'bg-[#E6F6EC] text-[#1E6B3B] border-[#A7DFBA]'
+                      : 'bg-[#FFF7E0] text-[#7A5901] border-[#F2D57E]'
+                  }"
+                  title="Toca para alternar entre En proceso y Publicado">
+                  <span class="text-sm">${isPublished ? '✅' : '⏳'}</span>
+                  <span>${isPublished ? 'Publicado' : 'En proceso'}</span>
+                </button>
+
+                <button type="button" onclick="deleteBoardIdea('${item.id}')" class="w-8 h-8 rounded-xl bg-white/80 hover:bg-coral/20 text-slateText hover:text-[#B83B24] flex items-center justify-center text-xs font-bold transition" title="Eliminar tarjeta">
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <!-- Cuerpo editable de la tarjeta -->
+            <div class="p-4 sm:p-5 space-y-3.5 flex-1 flex flex-col">
+              <!-- Fila: Pilar de contenido -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <label class="text-[11px] font-extrabold uppercase tracking-wider text-slateText">Pilar de contenido</label>
+                <select onchange="updateIdeaField('${item.id}', 'pillar', this.value)"
+                  class="px-3 py-1.5 rounded-xl bg-white border border-[#DFD6CB] text-xs font-bold text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal/20">
+                  ${pillarOptionsHtml}
+                </select>
+              </div>
+
+              <!-- Campo Hook -->
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slateText mb-1">🎣 Hook (Gancho inicial)</label>
+                <input type="text"
+                  value="${escapeHtml(item.hook)}"
+                  oninput="updateIdeaField('${item.id}', 'hook', this.value)"
+                  placeholder="Ej. 3 secretos que desearía saber antes de..."
+                  class="w-full px-3.5 py-2.5 rounded-2xl bg-white/95 border border-[#DFD6CB] text-sm font-bold text-charcoal placeholder:font-normal placeholder:text-slateText/60 focus:outline-none focus:ring-2 focus:ring-charcoal/25" />
+              </div>
+
+              <!-- Campo Idea (al menos 5 líneas visibles) -->
+              <div class="flex-1">
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slateText mb-1">📝 Desarrollo de la Idea</label>
+                <textarea rows="5"
+                  oninput="updateIdeaField('${item.id}', 'idea', this.value)"
+                  placeholder="Escribe aquí toda la estructura, slides, guion o notas de tu idea (espacio amplio de 5+ líneas para leer cómodo en móvil)..."
+                  class="idea-textarea w-full px-3.5 py-2.5 rounded-2xl bg-white/95 border border-[#DFD6CB] text-sm text-charcoal placeholder:text-slateText/60 focus:outline-none focus:ring-2 focus:ring-charcoal/25">${escapeHtml(item.idea)}</textarea>
+              </div>
+
+              <!-- Campo Link de inspiración -->
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slateText mb-1">🔗 Link de inspiración (Red social)</label>
+                <div class="flex items-center gap-2">
+                  <input type="url"
+                    value="${escapeHtml(item.link)}"
+                    oninput="updateIdeaField('${item.id}', 'link', this.value)"
+                    placeholder="Pega aquí el enlace de Reel, TikTok, Post..."
+                    class="flex-1 px-3.5 py-2 rounded-xl bg-white/95 border border-[#DFD6CB] text-xs sm:text-sm text-charcoal placeholder:text-slateText/60 focus:outline-none focus:ring-2 focus:ring-charcoal/25" />
+                  ${hasValidLink ? `
+                    <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer"
+                      class="px-3 py-2 rounded-xl bg-white hover:bg-skyPastel/40 border border-[#DFD6CB] text-xs font-extrabold text-charcoal shrink-0 transition">
+                      Ver ↗
+                    </a>
+                  ` : ''}
+                </div>
+              </div>
+
+              <!-- Pie de tarjeta: Mini calendario para elegir fecha + Botón "Subir esta idea al calendario" -->
+              <div class="pt-3 border-t border-black/5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                <button type="button" onclick="openMiniCalModal('${item.id}')"
+                  class="px-3.5 py-2.5 rounded-2xl bg-white hover:bg-cream border border-[#D8CEC2] text-xs font-extrabold text-charcoal flex items-center justify-center gap-2 shadow-2xs transition">
+                  <span>📅</span>
+                  <span>${item.scheduledDate ? formatDateShort(item.scheduledDate) : 'Elegir fecha'}</span>
+                </button>
+
+                <button type="button" onclick="pushIdeaToCalendar('${item.id}')"
+                  class="flex-1 px-4 py-2.5 rounded-2xl bg-charcoal hover:bg-[#2A2D37] active:scale-[0.99] text-white text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 shadow-pill transition">
+                  <span>🚀</span>
+                  <span>Subir esta idea al calendario</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // MINI CALENDARIO EMERGENTE (SELECTOR VISUAL EN TARJETAS)
+    // =========================================================================
+    function openMiniCalModal(ideaId) {
+      miniCalTargetIdeaId = ideaId;
+      const idea = appState.ideas.find(i => i.id === ideaId);
+      if (idea && idea.scheduledDate) {
+        const [y, m] = idea.scheduledDate.split('-').map(Number);
+        miniCalYear = y;
+        miniCalMonth = m - 1;
+      } else {
+        miniCalYear = calYear;
+        miniCalMonth = calMonth;
+      }
+      renderMiniCalendar();
+      document.getElementById('miniCalendarModal').classList.remove('hidden');
+    }
+
+    function closeMiniCalModal() {
+      document.getElementById('miniCalendarModal').classList.add('hidden');
+      miniCalTargetIdeaId = null;
+      renderIdeasBoard();
+    }
+
+    function changeMiniCalMonth(delta) {
+      miniCalMonth += delta;
+      if (miniCalMonth > 11) {
+        miniCalMonth = 0;
+        miniCalYear++;
+      } else if (miniCalMonth < 0) {
+        miniCalMonth = 11;
+        miniCalYear--;
+      }
+      renderMiniCalendar();
+    }
+
+    function selectMiniCalDate(dateStr) {
+      if (!miniCalTargetIdeaId) return;
+      const idea = appState.ideas.find(i => i.id === miniCalTargetIdeaId);
+      if (idea) {
+        idea.scheduledDate = dateStr;
+        saveState();
+      }
+      renderMiniCalendar();
+      showToast(`Fecha seleccionada: ${formatDateShort(dateStr)}`, '📅');
+    }
+
+    function clearMiniCalDate() {
+      if (!miniCalTargetIdeaId) return;
+      const idea = appState.ideas.find(i => i.id === miniCalTargetIdeaId);
+      if (idea) {
+        idea.scheduledDate = '';
+        saveState();
+      }
+      renderMiniCalendar();
+    }
+
+    function renderMiniCalendar() {
+      document.getElementById('miniCalMonthLabel').textContent = `${MONTH_NAMES_ES[miniCalMonth]} ${miniCalYear}`;
+      const grid = document.getElementById('miniCalDaysGrid');
+      const idea = appState.ideas.find(i => i.id === miniCalTargetIdeaId);
+      const selectedDate = idea ? idea.scheduledDate : '';
+
+      const firstDay = new Date(miniCalYear, miniCalMonth, 1);
+      // Convertir domingo (0) a 6, lunes (1) a 0
+      let startWeekday = firstDay.getDay() - 1;
+      if (startWeekday < 0) startWeekday = 6;
+
+      const daysInMonth = new Date(miniCalYear, miniCalMonth + 1, 0).getDate();
+      let cells = '';
+
+      for (let i = 0; i < startWeekday; i++) {
+        cells += `<div class="h-9"></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${miniCalYear}-${String(miniCalMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isSelected = dateStr === selectedDate;
+        cells += `
+          <button type="button" onclick="selectMiniCalDate('${dateStr}')"
+            class="h-9 rounded-xl text-xs font-extrabold transition flex items-center justify-center ${
+              isSelected
+                ? 'bg-charcoal text-mustard shadow-sm scale-105'
+                : 'bg-cream/80 hover:bg-mustard/40 text-charcoal'
+            }">
+            ${day}
+          </button>
+        `;
+      }
+
+      grid.innerHTML = cells;
+    }
+
+    // =========================================================================
+    // SECCIÓN 2: CALENDARIO DE PROGRAMACIÓN DE POSTS
+    // =========================================================================
+    function changeCalendarMonth(delta) {
+      calMonth += delta;
+      if (calMonth > 11) {
+        calMonth = 0;
+        calYear++;
+      } else if (calMonth < 0) {
+        calMonth = 11;
+        calYear--;
+      }
+      renderCalendarView();
+    }
+
+    function resetCalendarToDefault() {
+      calYear = 2026;
+      calMonth = 10; // Noviembre 2026
+      renderCalendarView();
+    }
+
+    function renderCalendarView() {
+      renderClientFilterBars();
+      document.getElementById('calendarMonthLabel').textContent = `${MONTH_NAMES_ES[calMonth]} ${calYear}`;
+
+      const grid = document.getElementById('calendarDaysGrid');
+      const firstDay = new Date(calYear, calMonth, 1);
+      let startWeekday = firstDay.getDay() - 1;
+      if (startWeekday < 0) startWeekday = 6;
+
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+      const totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
+
+      // Posts programados para este mes y año
+      const monthPrefix = `${calYear}-${String(calMonth + 1).padStart(2, '0')}`;
+      let scheduledIdeas = appState.ideas.filter(i => i.inCalendar && i.scheduledDate && i.scheduledDate.startsWith(monthPrefix));
+      if (selectedClientFilterCal !== 'ALL') {
+        scheduledIdeas = scheduledIdeas.filter(i => i.clientId === selectedClientFilterCal);
+      }
+
+      let cellsHtml = '';
+      for (let cell = 0; cell < totalCells; cell++) {
+        const dayNum = cell - startWeekday + 1;
+        if (dayNum < 1 || dayNum > daysInMonth) {
+          cellsHtml += `<div class="min-h-[96px] sm:min-h-[126px] bg-[#FAF7F3]/70 p-1.5"></div>`;
+          continue;
+        }
+
+        const dateStr = `${monthPrefix}-${String(dayNum).padStart(2, '0')}`;
+        const dayPosts = scheduledIdeas.filter(i => i.scheduledDate === dateStr);
+        const isTodayMock = dateStr === '2026-11-21';
+
+        const postsHtml = dayPosts.map(post => {
+          const client = getClientById(post.clientId);
+          const statusIcon = post.status === 'published' ? '✅' : '⏳';
+          const titleText = post.hook.trim() || post.idea.trim() || '(Sin título)';
+
+          return `
+            <button type="button" onclick="openCalendarDetailModal('${post.id}')"
+              style="background-color: ${client.bg}; border-left: 4px solid ${client.accent};"
+              class="w-full text-left px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-lg shadow-2xs hover:brightness-95 active:scale-[0.98] transition block group border border-black/5">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-tight truncate px-1.5 py-0.2 rounded-full"
+                  style="background-color: ${client.accent}; color: ${client.badgeText};">
+                  ${escapeHtml(client.name)}
+                </span>
+                <span class="text-[10px] sm:text-xs shrink-0">${statusIcon}</span>
+              </div>
+              <p class="text-[10px] sm:text-xs font-bold text-charcoal line-clamp-2 mt-0.5 leading-snug">
+                ${escapeHtml(titleText)}
+              </p>
+            </button>
+          `;
+        }).join('');
+
+        cellsHtml += `
+          <div class="min-h-[98px] sm:min-h-[132px] p-1 sm:p-2 bg-white hover:bg-[#FCF9F5] transition flex flex-col gap-1">
+            <div class="flex items-center justify-between">
+              <span class="w-6 h-6 rounded-full text-xs font-extrabold flex items-center justify-center ${
+                isTodayMock ? 'bg-charcoal text-mustard' : 'text-slateText'
+              }">
+                ${dayNum}
+              </span>
+              ${dayPosts.length > 0 ? `<span class="text-[10px] font-bold text-slateText/70 hidden sm:inline">${dayPosts.length}</span>` : ''}
+            </div>
+            <div class="space-y-1 flex-1">
+              ${postsHtml}
+            </div>
+          </div>
+        `;
+      }
+
+      grid.innerHTML = cellsHtml;
+      renderMonthlyAgendaList(scheduledIdeas);
+    }
+
+    function renderMonthlyAgendaList(scheduledIdeas) {
+      const container = document.getElementById('calendarMonthlyList');
+      if (scheduledIdeas.length === 0) {
+        container.innerHTML = `
+          <p class="text-xs sm:text-sm text-slateText py-3 text-center bg-cream/60 rounded-2xl">
+            No hay publicaciones programadas en ${MONTH_NAMES_ES[calMonth]} ${calYear} con el filtro actual.
+          </p>
+        `;
+        return;
+      }
+
+      const sorted = [...scheduledIdeas].sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate));
+      container.innerHTML = sorted.map(post => {
+        const client = getClientById(post.clientId);
+        const statusIcon = post.status === 'published' ? '✅' : '⏳';
+        const titleText = post.hook.trim() || post.idea.trim() || '(Sin título)';
+
+        return `
+          <div onclick="openCalendarDetailModal('${post.id}')"
+            style="background-color: ${client.bg}; border-left: 6px solid ${client.accent};"
+            class="p-3 rounded-2xl border border-black/5 flex items-center justify-between gap-3 cursor-pointer hover:shadow-sm transition">
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2 mb-1">
+                <span class="text-xs font-extrabold text-charcoal bg-white/80 px-2.5 py-0.5 rounded-lg border border-black/5">
+                  📅 ${formatDateShort(post.scheduledDate)}
+                </span>
+                <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full"
+                  style="background-color: ${client.accent}; color: ${client.badgeText};">
+                  ${escapeHtml(client.name)}
+                </span>
+                <span class="text-[11px] font-semibold text-slateText">${escapeHtml(post.pillar)}</span>
+              </div>
+              <p class="text-xs sm:text-sm font-bold text-charcoal truncate">${escapeHtml(titleText)}</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-base">${statusIcon}</span>
+              <span class="text-xs font-bold text-slateText">Ver ›</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // MODAL DE DETALLE DE POST EN CALENDARIO
+    // =========================================================================
+    function openCalendarDetailModal(ideaId) {
+      const idea = appState.ideas.find(i => i.id === ideaId);
+      if (!idea) return;
+
+      activeModalIdeaId = ideaId;
+      modalTempStatus = idea.status;
+      const client = getClientById(idea.clientId);
+
+      document.getElementById('modalColorHeader').style.backgroundColor = client.accent;
+      const clientBadge = document.getElementById('modalClientBadge');
+      clientBadge.textContent = client.name;
+      clientBadge.style.backgroundColor = client.accent;
+      clientBadge.style.color = client.badgeText;
+
+      document.getElementById('modalPillarBadge').textContent = idea.pillar;
+      document.getElementById('modalHookInput').value = idea.hook;
+      document.getElementById('modalIdeaTextarea').value = idea.idea;
+      document.getElementById('modalLinkInput').value = idea.link || '';
+      document.getElementById('modalDateInput').value = idea.scheduledDate || '';
+
+      updateModalLinkAnchor(idea.link);
+      updateModalStatusButtonUI();
+
+      document.getElementById('calendarDetailModal').classList.remove('hidden');
+    }
+
+    function updateModalLinkAnchor(url) {
+      const anchor = document.getElementById('modalLinkAnchor');
+      if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+        anchor.href = url;
+        anchor.classList.remove('opacity-40', 'pointer-events-none');
+      } else {
+        anchor.href = '#';
+        anchor.classList.add('opacity-40', 'pointer-events-none');
+      }
+    }
+
+    document.getElementById('modalLinkInput').addEventListener('input', (e) => {
+      updateModalLinkAnchor(e.target.value.trim());
+    });
+
+    function toggleModalIdeaStatus() {
+      modalTempStatus = modalTempStatus === 'published' ? 'in_progress' : 'published';
+      updateModalStatusButtonUI();
+    }
+
+    function updateModalStatusButtonUI() {
+      const btn = document.getElementById('modalStatusToggleBtn');
+      const isPub = modalTempStatus === 'published';
+      btn.className = `px-3.5 py-1.5 rounded-xl font-extrabold text-xs flex items-center gap-2 shadow-sm transition border ${
+        isPub
+          ? 'bg-[#E6F6EC] text-[#1E6B3B] border-[#A7DFBA]'
+          : 'bg-[#FFF7E0] text-[#7A5901] border-[#F2D57E]'
+      }`;
+      btn.innerHTML = `<span>${isPub ? '✅' : '⏳'}</span><span>${isPub ? 'Publicado' : 'En proceso'}</span>`;
+    }
+
+    function saveAndMoveCalendarIdea() {
+      if (!activeModalIdeaId) return;
+      const idea = appState.ideas.find(i => i.id === activeModalIdeaId);
+      if (!idea) return;
+
+      const newDate = document.getElementById('modalDateInput').value;
+      if (!newDate) {
+        showToast('Selecciona una fecha válida para el calendario', '⚠️');
+        return;
+      }
+
+      idea.hook = document.getElementById('modalHookInput').value;
+      idea.idea = document.getElementById('modalIdeaTextarea').value;
+      idea.link = document.getElementById('modalLinkInput').value.trim();
+      idea.scheduledDate = newDate;
+      idea.status = modalTempStatus;
+
+      // Navegar al mes de la nueva fecha si cambió de mes
+      const [y, m] = newDate.split('-').map(Number);
+      calYear = y;
+      calMonth = m - 1;
+
+      saveState();
+      closeDetailModal();
+      renderCalendarView();
+      showToast(`Publicación actualizada (${formatDateShort(newDate)})`, '✅');
+    }
+
+    function returnIdeaToBoard() {
+      if (!activeModalIdeaId) return;
+      const idea = appState.ideas.find(i => i.id === activeModalIdeaId);
+      if (!idea) return;
+
+      idea.hook = document.getElementById('modalHookInput').value;
+      idea.idea = document.getElementById('modalIdeaTextarea').value;
+      idea.link = document.getElementById('modalLinkInput').value.trim();
+      idea.status = modalTempStatus;
+      idea.inCalendar = false;
+
+      saveState();
+      closeDetailModal();
+      renderCalendarView();
+      showToast('Idea regresada a la zona de tarjetas 💡', '↩️');
+    }
+
+    function deleteCurrentModalIdea() {
+      if (!activeModalIdeaId) return;
+      appState.ideas = appState.ideas.filter(i => i.id !== activeModalIdeaId);
+      saveState();
+      closeDetailModal();
+      renderCalendarView();
+      showToast('Publicación eliminada del calendario', '🗑️');
+    }
+
+    function closeDetailModal() {
+      document.getElementById('calendarDetailModal').classList.add('hidden');
+      activeModalIdeaId = null;
+    }
+
+    // =========================================================================
+    // SECCIÓN 3: LABORATORIO DE IDEAS (PROYECTOS INDEPENDIENTES)
+    // =========================================================================
+    const LAB_STYLES = [
+      { accent: '#F2CE46', bg: '#FDF8E4', tagBg: '#F2CE46', tagText: '#3B3F4C' },
+      { accent: '#B392AC', bg: '#F6F1FB', tagBg: '#D8C7EE', tagText: '#3B3F4C' },
+      { accent: '#8CB87A', bg: '#F2F9EF', tagBg: '#C5E0B4', tagText: '#3B3F4C' },
+      { accent: '#6BA3BE', bg: '#EFF7FB', tagBg: '#A8D1E7', tagText: '#3B3F4C' }
+    ];
+
+    function createNewLabCard() {
+      const newLab = {
+        id: 'lab-' + Date.now(),
+        title: '',
+        tag: 'Proyecto Propio',
+        notes: '',
+        link: '',
+        colorIndex: appState.labIdeas.length % LAB_STYLES.length
+      };
+      appState.labIdeas.unshift(newLab);
+      saveState();
+      renderLabView();
+      showToast('Nueva tarjeta en Laboratorio de Ideas', '🧪');
+    }
+
+    function updateLabField(labId, field, value) {
+      const item = appState.labIdeas.find(l => l.id === labId);
+      if (!item) return;
+      item[field] = value;
+      saveState();
+      if (field === 'link') renderLabView();
+    }
+
+    function deleteLabCard(labId) {
+      appState.labIdeas = appState.labIdeas.filter(l => l.id !== labId);
+      saveState();
+      renderLabView();
+      showToast('Nota eliminada del laboratorio', '🗑️');
+    }
+
+    function promoteLabToClientIdea(labId) {
+      const item = appState.labIdeas.find(l => l.id === labId);
+      if (!item) return;
+
+      const newIdea = {
+        id: 'idea-' + Date.now(),
+        clientId: 'ushy',
+        hook: item.title || 'Idea desde Laboratorio',
+        idea: item.notes,
+        link: item.link,
+        pillar: 'Inspirador',
+        status: 'in_progress',
+        scheduledDate: '',
+        inCalendar: false
+      };
+
+      appState.ideas.unshift(newIdea);
+      appState.labIdeas = appState.labIdeas.filter(l => l.id !== labId);
+      saveState();
+      renderLabView();
+      showToast('Movida a Ideas de Contenido (asignada a Ushy)', '💡');
+    }
+
+    function renderLabView() {
+      const grid = document.getElementById('labGrid');
+      if (appState.labIdeas.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-[#E2D9CE] space-y-3">
+            <div class="w-14 h-14 rounded-2xl bg-sagePastel/60 mx-auto flex items-center justify-center text-2xl">🧪</div>
+            <h3 class="text-lg font-extrabold text-charcoal">Tu Laboratorio está listo para experimentar</h3>
+            <p class="text-sm text-slateText max-w-md mx-auto">Guarda aquí proyectos independientes, ideas locas, colaboraciones o formatos personales fuera de clientes.</p>
+            <button onclick="createNewLabCard()" class="px-5 py-2.5 rounded-2xl bg-mustard text-charcoal text-sm font-extrabold shadow-pill hover:bg-[#E7C135] transition">
+              + Anotar primera idea libre
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = appState.labIdeas.map((item, idx) => {
+        const style = LAB_STYLES[(item.colorIndex ?? idx) % LAB_STYLES.length];
+        const hasValidLink = item.link && (item.link.startsWith('http://') || item.link.startsWith('https://'));
+
+        return `
+          <article class="card-transition rounded-3xl shadow-editorial hover:shadow-cardHover border border-[#E6DDD2] overflow-hidden flex flex-col"
+            style="background-color: ${style.bg}; border-top: 6px solid ${style.accent};">
+
+            <div class="px-4 pt-4 pb-2.5 flex items-center justify-between gap-2">
+              <input type="text"
+                value="${escapeHtml(item.tag)}"
+                oninput="updateLabField('${item.id}', 'tag', this.value)"
+                style="background-color: ${style.tagBg}; color: ${style.tagText};"
+                class="px-3 py-1 rounded-full text-xs font-extrabold tracking-wide focus:outline-none focus:ring-2 focus:ring-charcoal/20 max-w-[190px]"
+                placeholder="Etiqueta libre..." />
+
+              <button type="button" onclick="deleteLabCard('${item.id}')" class="w-8 h-8 rounded-xl bg-white/80 hover:bg-coral/20 text-slateText hover:text-[#B83B24] flex items-center justify-center text-xs font-bold transition" title="Eliminar">
+                ✕
+              </button>
+            </div>
+
+            <div class="p-4 pt-1 space-y-3 flex-1 flex flex-col">
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slateText mb-1">💡 Concepto / Proyecto</label>
+                <input type="text"
+                  value="${escapeHtml(item.title)}"
+                  oninput="updateLabField('${item.id}', 'title', this.value)"
+                  placeholder="Título de tu idea independiente..."
+                  class="w-full px-3.5 py-2.5 rounded-2xl bg-white/95 border border-[#DFD6CB] text-sm font-bold text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal/20" />
+              </div>
+
+              <div class="flex-1">
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slateText mb-1">📝 Notas y desarrollo</label>
+                <textarea rows="5"
+                  oninput="updateLabField('${item.id}', 'notes', this.value)"
+                  placeholder="Desarrolla tu idea libremente..."
+                  class="idea-textarea w-full px-3.5 py-2.5 rounded-2xl bg-white/95 border border-[#DFD6CB] text-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal/20">${escapeHtml(item.notes)}</textarea>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slateText mb-1">🔗 Link de inspiración</label>
+                <div class="flex items-center gap-2">
+                  <input type="url"
+                    value="${escapeHtml(item.link)}"
+                    oninput="updateLabField('${item.id}', 'link', this.value)"
+                    placeholder="https://..."
+                    class="flex-1 px-3 py-2 rounded-xl bg-white/95 border border-[#DFD6CB] text-xs text-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal/20" />
+                  ${hasValidLink ? `
+                    <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer"
+                      class="px-3 py-2 rounded-xl bg-white hover:bg-mustard/40 border border-[#DFD6CB] text-xs font-extrabold text-charcoal shrink-0">
+                      Ver ↗
+                    </a>
+                  ` : ''}
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-black/5">
+                <button type="button" onclick="promoteLabToClientIdea('${item.id}')"
+                  class="w-full py-2 px-3 rounded-xl bg-white/90 hover:bg-charcoal hover:text-white text-charcoal border border-[#DCD2C6] text-xs font-extrabold transition flex items-center justify-center gap-1.5">
+                  <span>➡️</span> Pasar a Ideas de Contenido
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // GESTIÓN DE CLIENTES (AGREGAR NUEVO DESTINATARIO CON COLOR)
+    // =========================================================================
+    let pendingIdeaIdForNewClient = null;
+
+    function openClientModal(pendingIdeaId = null) {
+      pendingIdeaIdForNewClient = pendingIdeaId;
+      document.getElementById('newClientNameInput').value = '';
+      renderColorPalettePicker();
+      renderClientsListModal();
+      document.getElementById('clientModal').classList.remove('hidden');
+    }
+
+    function closeClientModal() {
+      document.getElementById('clientModal').classList.add('hidden');
+      pendingIdeaIdForNewClient = null;
+    }
+
+    function renderColorPalettePicker() {
+      const container = document.getElementById('colorPalettePicker');
+      container.innerHTML = COLOR_PALETTE.map(color => {
+        const isSelected = selectedNewClientColor.id === color.id;
+        return `
+          <button type="button" onclick="selectNewClientSwatch('${color.id}')"
+            style="background-color: ${color.accent};"
+            class="w-9 h-9 rounded-2xl border-2 transition flex items-center justify-center ${
+              isSelected ? 'border-charcoal scale-110 shadow-md' : 'border-white shadow-xs opacity-85 hover:opacity-100'
+            }"
+            title="${color.name}">
+            ${isSelected ? `<span class="text-xs font-extrabold" style="color:${color.badgeText}">✓</span>` : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectNewClientSwatch(colorId) {
+      const found = COLOR_PALETTE.find(c => c.id === colorId);
+      if (found) {
+        selectedNewClientColor = found;
+        renderColorPalettePicker();
+      }
+    }
+
+    function addNewClient() {
+      const nameInput = document.getElementById('newClientNameInput');
+      const name = nameInput.value.trim();
+      if (!name) {
+        showToast('Escribe el nombre del nuevo cliente', '⚠️');
+        return;
+      }
+
+      const newId = 'client-' + Date.now();
+      const newClient = {
+        id: newId,
+        name: name,
+        accent: selectedNewClientColor.accent,
+        bg: selectedNewClientColor.bg,
+        badgeText: selectedNewClientColor.badgeText
+      };
+
+      appState.clients.push(newClient);
+
+      // Si se abrió desde el selector desplegable de una tarjeta, asignarlo de inmediato
+      if (pendingIdeaIdForNewClient) {
+        const idea = appState.ideas.find(i => i.id === pendingIdeaIdForNewClient);
+        if (idea) idea.clientId = newId;
+      }
+
+      saveState();
+      nameInput.value = '';
+      renderClientsListModal();
+      renderIdeasBoard();
+      renderCalendarView();
+      showToast(`Cliente "${name}" agregado`, '🎨');
+
+      if (pendingIdeaIdForNewClient) {
+        closeClientModal();
+      }
+    }
+
+    function renderClientsListModal() {
+      const list = document.getElementById('clientsListContainer');
+      list.innerHTML = appState.clients.map(c => `
+        <div class="flex items-center justify-between px-3.5 py-2 rounded-2xl border border-black/5" style="background-color: ${c.bg};">
+          <div class="flex items-center gap-2.5">
+            <span class="w-4 h-4 rounded-full border border-black/15" style="background-color: ${c.accent};"></span>
+            <span class="text-sm font-extrabold text-charcoal">${escapeHtml(c.name)}</span>
+          </div>
+          <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full" style="background-color: ${c.accent}; color: ${c.badgeText};">
+            Etiqueta
+          </span>
+        </div>
+      `).join('');
+    }
+
+    // =========================================================================
+    // RESPALDO Y CONFIGURACIÓN
+    // =========================================================================
+    function openDataModal() {
+      document.getElementById('dataModal').classList.remove('hidden');
+    }
+
+    function closeDataModal() {
+      document.getElementById('dataModal').classList.add('hidden');
+    }
+
+    function exportBackupJSON() {
+      const dataStr = JSON.stringify(appState, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `respaldo-escritorio-ushy-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Respaldo descargado correctamente', '💾');
+    }
+
+    function importBackupJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed && Array.isArray(parsed.clients) && Array.isArray(parsed.ideas)) {
+            appState = parsed;
+            if (!Array.isArray(appState.labIdeas)) appState.labIdeas = [];
+            saveState();
+            renderIdeasBoard();
+            renderCalendarView();
+            renderLabView();
+            closeDataModal();
+            showToast('Respaldo restaurado con éxito', '✅');
+          } else {
+            showToast('El archivo JSON no tiene el formato válido', '⚠️');
+          }
+        } catch (err) {
+          showToast('No se pudo leer el archivo JSON', '⚠️');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetDemoData() {
+      appState = getInitialSeedState();
+      saveState();
+      renderIdeasBoard();
+      renderCalendarView();
+      renderLabView();
+      closeDataModal();
+      showToast('Datos de ejemplo restaurados', '🔄');
+    }
+
+    // Formatear YYYY-MM-DD a texto amigable corto (ej. "28 Nov 2026")
+    function formatDateShort(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      const year = parts[0];
+      const monthIdx = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const shortMonth = (MONTH_NAMES_ES[monthIdx] || '').slice(0, 3);
+      return `${day} ${shortMonth} ${year}`;
+    }
+
+    // =========================================================================
+    // UTILIDADES DE INTERFAZ, NAVEGACIÓN Y RENDERIZADO AUXILIAR
+    // =========================================================================
+    function getClientById(clientId) {
+      return appState.clients.find(c => c.id === clientId) || appState.clients[0] || DEFAULT_CLIENTS[0];
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showToast(message, icon = '✨') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast-enter pointer-events-auto bg-charcoal text-white px-4 py-3 rounded-2xl shadow-xl border border-white/10 flex items-center gap-2.5 text-xs sm:text-sm font-bold';
+      toast.innerHTML = `<span class="text-base shrink-0">${icon}</span><span class="flex-1">${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'all 0.2s ease';
+        setTimeout(() => toast.remove(), 220);
+      }, 2800);
+    }
+
+    function updateTabCounters() {
+      if (!appState) return;
+      const pendingIdeasCount = appState.ideas.filter(i => !i.inCalendar).length;
+      const scheduledIdeasCount = appState.ideas.filter(i => i.inCalendar).length;
+      const labIdeasCount = appState.labIdeas.length;
+
+      const setTxt = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      };
+
+      setTxt('badge-ideas-desk', pendingIdeasCount);
+      setTxt('badge-ideas-mob', pendingIdeasCount);
+      setTxt('badge-cal-desk', scheduledIdeasCount);
+      setTxt('badge-cal-mob', scheduledIdeasCount);
+      setTxt('badge-lab-desk', labIdeasCount);
+      setTxt('badge-lab-mob', labIdeasCount);
+    }
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+      const views = ['ideas', 'calendar', 'lab'];
+
+      views.forEach(v => {
+        const section = document.getElementById(`view-${v}`);
+        if (section) {
+          section.classList.toggle('hidden', v !== tabName);
+        }
+
+        // Actualizar estilo botones Desktop
+        const deskBtn = document.getElementById(`desk-tab-${v}`);
+        if (deskBtn) {
+          if (v === tabName) {
+            deskBtn.className = 'nav-tab-desk px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 bg-white text-charcoal shadow-pill';
+          } else {
+            deskBtn.className = 'nav-tab-desk px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 text-slateText hover:text-charcoal';
+          }
+        }
+
+        // Actualizar estilo botones Móvil
+        const mobBtn = document.getElementById(`mob-tab-${v}`);
+        if (mobBtn) {
+          if (v === tabName) {
+            mobBtn.className = 'nav-tab-mob flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-mustard/35 text-charcoal font-extrabold transition';
+          } else {
+            mobBtn.className = 'nav-tab-mob flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slateText font-bold transition';
+          }
+        }
+      });
+
+      if (tabName === 'ideas') renderIdeasBoard();
+      if (tabName === 'calendar') renderCalendarView();
+      if (tabName === 'lab') renderLabView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderClientFilterBars() {
+      // Barra de filtro en Ideas
+      const ideasBar = document.getElementById('ideasClientFilterBar');
+      if (ideasBar) {
+        const allActive = selectedClientFilterIdeas === 'ALL';
+        ideasBar.innerHTML = `
+          <button type="button" onclick="setIdeasClientFilter('ALL')"
+            class="px-3.5 py-1.5 rounded-full text-xs font-extrabold shrink-0 transition ${
+              allActive ? 'bg-charcoal text-white shadow-xs' : 'bg-cream hover:bg-[#EAE2D8] text-slateText'
+            }">
+            Todos (${appState.ideas.filter(i => !i.inCalendar).length})
+          </button>
+          ${appState.clients.map(c => {
+            const count = appState.ideas.filter(i => !i.inCalendar && i.clientId === c.id).length;
+            const isActive = selectedClientFilterIdeas === c.id;
+            return `
+              <button type="button" onclick="setIdeasClientFilter('${c.id}')"
+                style="${isActive ? `background-color:${c.accent}; color:${c.badgeText};` : `background-color:${c.bg}; color:#3B3F4C;`}"
+                class="px-3.5 py-1.5 rounded-full text-xs font-extrabold shrink-0 flex items-center gap-1.5 border border-black/5 transition ${
+                  isActive ? 'ring-2 ring-charcoal/25 shadow-xs' : 'opacity-85 hover:opacity-100'
+                }">
+                <span class="w-2.5 h-2.5 rounded-full border border-black/15" style="background-color:${c.accent};"></span>
+                <span>${escapeHtml(c.name)}</span>
+                <span class="opacity-75">(${count})</span>
+              </button>
+            `;
+          }).join('')}
+        `;
+      }
+
+      // Barra de filtro en Calendario
+      const calBar = document.getElementById('calendarClientFilterBar');
+      if (calBar) {
+        const allActive = selectedClientFilterCal === 'ALL';
+        calBar.innerHTML = `
+          <button type="button" onclick="setCalClientFilter('ALL')"
+            class="px-3.5 py-1.5 rounded-full text-xs font-extrabold shrink-0 transition ${
+              allActive ? 'bg-charcoal text-white shadow-xs' : 'bg-cream hover:bg-[#EAE2D8] text-slateText'
+            }">
+            Todos los clientes
+          </button>
+          ${appState.clients.map(c => {
+            const isActive = selectedClientFilterCal === c.id;
+            return `
+              <button type="button" onclick="setCalClientFilter('${c.id}')"
+                style="${isActive ? `background-color:${c.accent}; color:${c.badgeText};` : `background-color:${c.bg}; color:#3B3F4C;`}"
+                class="px-3.5 py-1.5 rounded-full text-xs font-extrabold shrink-0 flex items-center gap-1.5 border border-black/5 transition ${
+                  isActive ? 'ring-2 ring-charcoal/25 shadow-xs' : 'opacity-85 hover:opacity-100'
+                }">
+                <span class="w-2.5 h-2.5 rounded-full border border-black/15" style="background-color:${c.accent};"></span>
+                <span>${escapeHtml(c.name)}</span>
+              </button>
+            `;
+          }).join('')}
+        `;
+      }
+    }
+
+    // Inicialización al cargar la página
+    window.addEventListener('DOMContentLoaded', () => {
+      updateTabCounters();
+      renderIdeasBoard();
+      renderCalendarView();
+      renderLabView();
+    });
+  </script>
+</body>
+</html>
